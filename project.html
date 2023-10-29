@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	  <meta charset="utf-8"/>
+  	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	  <title>MOVIE</title>
+  	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css"/>
+	  <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	  <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <style>
+      #slide {
+        text-align : center;
+        position : relative;
+        width : 700px;
+        height : auto;
+        display: block;
+        margin: 0px auto;
+      }
+
+      #slide li {
+        position : absolute;
+        top : 0;
+        left : 0;
+        display : none;
+        -webkit-display : block;
+      }
+
+      #slide img {
+        width : 330px;
+        height : 200px;
+      }
+
+      #menu {
+        padding-top : 200px;
+      }
+    </style>
+
+    <script>
+      //첫번째(무비차트)
+      $(document).ready(function() {
+        document.getElementById("today").valueAsDate = new Date();
+
+        $("#ok").click(function() {
+          $("#list").empty();
+
+          var url = "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.xml?key=c68166582e884ec3807477495e43cd6e&targetDt=";
+          date_list = $('#today').val().split('-');
+          url = url + date_list[0] + date_list[1] + date_list[2];
+
+          $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "xml",
+            success: function(mydata) {
+              var str = "";
+
+              if ($(mydata).find("dailyBoxOffice").text() == "") {
+                $("#list").append("자료가 없습니다.");
+                return;
+              }
+
+              $(mydata).find("dailyBoxOffice").each(function() {
+                str = str + "<div><h3>" + $(this).find("rank").text() + "위 "
+
+                str = str + "<a href='https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=1&ie=utf8&query=" + $(this).find("movieNm").text() + "'>";
+                str = str + $(this).find("movieNm").text() + "</a></h3></div>";
+
+                str = str + "<div>개봉일 : " + $(this).find("openDt").text() + "<br>";
+                str = str + "누적관객수 : " + $(this).find("audiAcc").text() + "명</div><hr>";
+              });
+              $("#list").append(str);
+            },
+            error: function() {
+              $("#list").append("Error ...");
+            }
+          });
+        });
+      });
+
+      //두번째(영화검색)
+      $(document).ready(function() {
+        $("#okey").click(function() {
+          $("#memo").empty();
+
+          var url = "http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.xml?key=c68166582e884ec3807477495e43cd6e&targetDt=";
+
+          $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "xml",
+            success: function(mydata) {
+              var str = "";
+              str = str + $("#input1");
+
+              if ($(mydata).find("movieNm").text() == "") {
+                $("#memo").append("자료가 없습니다.");
+                return;
+              }
+
+              $(mydata).find("movieNm").each(function() {
+                if ($(mydata).find("movieNm").text() == "#input1") {
+                  str = str + "<div><h3>" + $(this).find("movieNm").text() + "(";
+                  str = str + $(this).find("movieNmEn").text() + ")</h3></div>";
+                }
+              });
+              $("#memo").append(str);
+            },
+            error: function() {
+              $("#memo").append("Error ...");
+            }
+          });
+        });
+      });
+
+      //세번째(예매)
+      $(document).ready(function() {
+        document.getElementById("today2").valueAsDate = new Date();
+
+          var url = "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.xml?key=c68166582e884ec3807477495e43cd6e&targetDt=";
+          date_list = $('#today2').val().split('-');
+          url = url + date_list[0] + date_list[1] + date_list[2];
+
+          $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "xml",
+            success: function(mydata) {
+              var str = "";
+
+              $(mydata).find("dailyBoxOffice").each(function() {
+                str = str + "<a href='https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=1&ie=utf8&query=" + $(this).find("movieNm").text() + "'>";
+                str = str + $(this).find("movieNm").text() + "</a></h3></div>";
+              });
+
+              $("#list").append(str);
+            }
+          });
+        });
+
+      $(document).ready(function(){
+        $("#flip").click(function(){
+          $("#panel").slideToggle("slow");
+        });
+      });
+
+      //세번째(예매)
+      function categoryChange(e) {
+      	var area_a = ["강남", "건대입구", "대학로", "홍대"];
+      	var area_b = ["김포", "안산", "의정부", "일산"];
+      	var area_c = ["계양", "부평", "인천", "인천논현"];
+        var area_d = ["강릉", "원주", "인제", "춘천"];
+        var area_e = ["논산", "당진", "대전", "세종"];
+        var area_f = ["대구수성", "대구스타디움", "대구칠곡", "대구현대"];
+        var area_g = ["동래", "서면", "울산삼산", "해운대"];
+        var area_h = ["경산", "구미", "김해", "안동"];
+        var area_i = ["광주터미널", "군산", "목포", "제주"];
+      	var target = document.getElementById("area");
+
+
+      	if(e.value == "seoul") var d = area_a;
+      	else if(e.value == "gyeongg") var d = area_b;
+      	else if(e.value == "incheon") var d = area_c;
+        else if(e.value == "gangwon") var d = area_d;
+        else if(e.value == "daejeon") var d = area_e;
+        else if(e.value == "daegu") var d = area_f;
+        else if(e.value == "busan") var d = area_g;
+        else if(e.value == "gyeongsang") var d = area_h;
+        else if(e.value == "gwangju") var d = area_i;
+
+      	target.options.length = 0;
+
+      	for (x in d) {
+      		var opt = document.createElement("option");
+      		opt.value = d[x];
+      		opt.innerHTML = d[x];
+      		target.appendChild(opt);
+      	}
+      }
+      //네번째(극장)
+      function categoryChange1(e) {
+        var area_a = ["강남", "건대입구", "대학로", "홍대"];
+        var area_b = ["김포", "안산", "의정부", "일산"];
+        var area_c = ["계양", "부평", "인천", "인천논현"];
+        var area_d = ["강릉", "원주", "인제", "춘천"];
+        var area_e = ["논산", "당진", "대전", "세종"];
+        var area_f = ["대구수성", "대구스타디움", "대구칠곡", "대구현대"];
+        var area_g = ["동래", "서면", "울산삼산", "해운대"];
+        var area_h = ["경산", "구미", "김해", "안동"];
+        var area_i = ["광주터미널", "군산", "목포", "제주"];
+        var target = document.getElementById("area1");
+
+
+        if(e.value == "seoul") var d = area_a;
+        else if(e.value == "gyeongg") var d = area_b;
+        else if(e.value == "incheon") var d = area_c;
+        else if(e.value == "gangwon") var d = area_d;
+        else if(e.value == "daejeon") var d = area_e;
+        else if(e.value == "daegu") var d = area_f;
+        else if(e.value == "busan") var d = area_g;
+        else if(e.value == "gyeongsang") var d = area_h;
+        else if(e.value == "gwangju") var d = area_i;
+
+        target.options.length = 0;
+
+        for (x in d) {
+          var opt = document.createElement("option");
+          opt.value = d[x];
+          opt.innerHTML = d[x];
+          target.appendChild(opt);
+        }
+      }
+
+      function maps() {
+        $("#ok2").click(function() {
+          $("#map").empty();
+          $("#map").append('<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3230.1174385976346!2d128.55815731522327!3d35.94409698013385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3565e730ed9c4967%3A0xae9a0924c961e890!2zQ0dWIOuMgOq1rOy5oOqzoQ!5e0!3m2!1sko!2skr!4v1623041187010!5m2!1sko!2skr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>');
+        });
+      };
+    </script>
+
+    <!-- 이미지 슬라이드 -->
+    <script type="text/javascript">
+      imgslide(); //페이지가 로딩될때 함수를 실행합니다
+      function imgslide() {
+        $val = $("#slide").attr("val"); //현재 이미지 번호를 가져옵니다
+        $mx = $("#slide").attr("mx"); //총 이미지 개수를 가져옵니다
+      	$("#img"+$val).hide(); //현재 이미지를 사라지게 합니다.
+      	if( $val == $mx ){ $val = 1; } //현재이미지가 마지막 번호라면 1번으로 되돌립니다.
+      	else{ $val++; } //마지막 번호가 아니라면 카운트를 증가시켜줍니다
+      	$("#img"+$val).fadeIn(500); //변경된 번호의 이미지영역을 나타나게 합니다.괄호 안에 숫자는 페이드인 되는 시간을 나타냅니다.
+      	$("#slide").attr('val',$val); //변경된 이미지영역의 번호를 부여합니다.
+      	setTimeout('imgslide()',3000); //1초 뒤에 다시 함수를 호출합니다.(숫자값 1000당 1초)
+      }
+    </script>
+  </head>
+  <body>
+    <!-- 시작 페이지 -->
+    <div data-role="page" id="page0">
+      <div data-role="header" data-position="fixed" style="color:red;">
+        <h1>CGV</h1>
+        <a href="#panel1" data-icon="bars" data-role="button" data-inline="true">PANEL</a>
+        <a href="#page0" data-icon="home" data-iconpos="notext" class="ui-btn-right">HOME</a>
+      </div>
+
+      <div data-role="panel" id="panel1" data-display="overlay" data-theme="b">
+          <h3>제작자 정보</h3>
+          <p>이름 : 안나경</p>
+          <p>이메일 : annakoung19@naver.com</p>
+          <p>전화번호 : 010-7470-0791</p>
+      </div>
+
+      <div data-role="content">
+        <div id="slide" val="1" mx="6">
+        	<li id="img1"><img src="movie1.jpg"/></li>
+        	<li id="img2"><img src="movie2.jpg"/></li>
+        	<li id="img3"><img src="movie3.jpg"/></li>
+          <li id="img4"><img src="movie4.jpg"/></li>
+        	<li id="img5"><img src="movie5.jpg"/></li>
+        	<li id="img6"><img src="movie6.jpg"/></li>
+        </div>
+        <div id="menu">
+          <ul data-role="listview" data-inset="true">
+            <li><a href="#page1">무비차트</a></li>
+            <li><a href="#page2">영화검색</a></li>
+            <li><a href="#page3">예매</a></li>
+            <li><a href="#page4">극장</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div data-role="footer" data-position="fixed">
+        <h4>2005011 - 안나경</h4>
+      </div>
+    </div>
+
+    <!-- 첫번째(무비차트) 페이지 -->
+    <div data-role="page" id="page1">
+      <div data-role="header" data-position="fixed" style="color:red;">
+        <a href="#" data-icon="back" data-rel="back" data-diretion="reverse">BACK</a>
+        <h1>MOVIE</h1>
+        <a href="#page0" data-icon="home" data-iconpos="notext" class="ui-btn-right">HOME</a>
+      </div>
+      <div data-role="content">
+        <div class="ui-bar ui-bar-a">무비차트</div>
+        <div class="ui-body ui-body-a">
+          <div>
+            <input type="date" id="today">
+        		<button id="ok">확인</button>
+            <div id="list"></div>
+          </div>
+        </div>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <h4>2005011 - 안나경</h4>
+      </div>
+    </div>
+
+    <!-- 두번째(영화검색) 페이지 -->
+    <div data-role="page" id="page2">
+      <div data-role="header" data-position="fixed" style="color:red;">
+        <a href="#" data-icon="back" data-rel="back" data-diretion="reverse">BACK</a>
+        <h1>MOVIE</h1>
+        <a href="#page0" data-icon="home" data-iconpos="notext" class="ui-btn-right">HOME</a>
+      </div>
+      <div data-role="content">
+        <div class="ui-bar ui-bar-a">영화검색</div>
+        <div class="ui-body ui-body-a">
+          <div>
+            <label for="input1" class="ui-hidden-accessible">검색</label>
+            <input type="search" name="input1" id="input1" placeholder="키워드를 입력하세요">
+            <button id="okey">확인</button>
+            <div id="memo"></div>
+          </div>
+        </div>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <h4>2005011 - 안나경</h4>
+      </div>
+    </div>
+
+    <!-- 세번째(예매) 페이지 -->
+    <div data-role="page" id="page3">
+      <div data-role="header" data-position="fixed" style="color:red;">
+        <a href="#" data-icon="back" data-rel="back" data-diretion="reverse">BACK</a>
+        <h1>TICKET</h1>
+        <a href="#page0" data-icon="home" data-iconpos="notext" class="ui-btn-right">HOME</a>
+      </div>
+      <div data-role="content">
+        <div class="ui-bar ui-bar-a">영화</div>
+        <div class="ui-body ui-body-a">
+          <select id="selectmovie">
+            <option>영화를 선택하세요</option>
+          </select>
+        </div><br/>
+
+        <div class="ui-bar ui-bar-a">극장</div>
+        <div class="ui-body ui-body-a">
+          <select onchange="categoryChange(this)">
+            <option>극장을 선택하세요</option>
+              <option value="seoul">서울</option>
+              <option value="gyeongg">경기</option>
+              <option value="incheon">인천</option>
+              <option value="gangwon">강원</option>
+              <option value="daejeon">대전/충청</option>
+              <option value="daegu">대구</option>
+              <option value="busan">부산/울산</option>
+              <option value="gyeongsang">경상</option>
+              <option value="gwangju">광주/전라/제주</option>
+          </select>
+          <select id="area">
+            <option>극장을 선택하세요</option>
+          </select>
+        </div><br/>
+
+        <div class="ui-bar ui-bar-a">날짜</div>
+        <div class="ui-body ui-body-a">
+          <label for="today2">날짜를 선택하세요</label>
+          <input type="date" id="today2">
+        </div><br/>
+
+        <div class="ui-bar ui-bar-a">시간</div>
+        <div class="ui-body ui-body-a">
+        </div><br/>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <h4>2005011 - 안나경</h4>
+      </div>
+    </div>
+
+    <!-- 네번째(극장) 페이지 -->
+    <div data-role="page" id="page4">
+      <div data-role="header" data-position="fixed" style="color:red;">
+        <a href="#" data-icon="back" data-rel="back" data-diretion="reverse">BACK</a>
+        <h1>THEATER</h1>
+        <a href="#page0" data-icon="home" data-iconpos="notext" class="ui-btn-right">HOME</a>
+      </div>
+      <div data-role="content">
+        <div class="ui-bar ui-bar-a">극장</div>
+        <div class="ui-body ui-body-a">
+          <select onchange="categoryChange1(this)">
+            <option>극장을 선택하세요</option>
+              <option value="seoul">서울</option>
+              <option value="gyeongg">경기</option>
+              <option value="incheon">인천</option>
+              <option value="gangwon">강원</option>
+              <option value="daejeon">대전/충청</option>
+              <option value="daegu">대구</option>
+              <option value="busan">부산/울산</option>
+              <option value="gyeongsang">경상</option>
+              <option value="gwangju">광주/전라/제주</option>
+          </select>
+          <select id="area1">
+            <option>극장을 선택하세요</option>
+          </select>
+          <br>
+          <button id="ok2">확인</button>
+          <div id="map">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3230.1174385976346!2d128.55815731522327!3d35.94409698013385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3565e730ed9c4967%3A0xae9a0924c961e890!2zQ0dWIOuMgOq1rOy5oOqzoQ!5e0!3m2!1sko!2skr!4v1623041187010!5m2!1sko!2skr" width="100%" style="border:0; display: block; margin: 0px auto;" allowfullscreen="" loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <h4>2005011 - 안나경</h4>
+      </div>
+    </div>
+  </body>
+</html>
