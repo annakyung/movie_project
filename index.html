@@ -84,7 +84,7 @@
         $("#okey").click(function() {
           $("#memo").empty();
 
-          var url = "http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.xml?key=c68166582e884ec3807477495e43cd6e&targetDt=";
+          var url = "https://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.xml?key=c68166582e884ec3807477495e43cd6e&targetDt=";
 
           $.ajax({
             url: url,
@@ -118,7 +118,7 @@
       $(document).ready(function() {
         document.getElementById("today2").valueAsDate = new Date();
 
-          var url = "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.xml?key=c68166582e884ec3807477495e43cd6e&targetDt=";
+          var url = "https://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.xml?key=c68166582e884ec3807477495e43cd6e&targetDt=";
           date_list = $('#today2').val().split('-');
           url = url + date_list[0] + date_list[1] + date_list[2];
 
